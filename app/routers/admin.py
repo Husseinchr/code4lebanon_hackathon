@@ -9,6 +9,9 @@ from app.config import settings
 from app.models.schemas import RefreshResponse
 from app.services.data_processor import normalize_df
 from app.services.survey_client import force_refresh
+from app.services.alerts            import compute_alerts
+from app.services.program_readiness import compute_program_readiness
+from app.services.cohort_profile    import compute_cohort_profile
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -36,12 +39,18 @@ async def refresh_cache(
             compute_interests,
             compute_summary,
         )
+        from app.services.recommendations import compute_recommendations
+
         request.app.state.aggregations = {
-            "summary":       compute_summary(df),
-            "dissemination": compute_dissemination(df),
-            "interests":     compute_interests(df),
-            "geography":     compute_geography(df),
-        }
+    "summary":          compute_summary(df),
+    "dissemination":    compute_dissemination(df),
+    "interests":        compute_interests(df),
+    "geography":        compute_geography(df),
+    "recommendations":  compute_recommendations(df),
+    "alerts":            compute_alerts(df),             # ADD THIS
+    "program_readiness": compute_program_readiness(df),  # ADD THIS
+    "cohort_profile":    compute_cohort_profile(df),     # ADD THIS
+}
 
         logger.info("[admin/refresh] Cache refreshed: %d records.", count)
         return RefreshResponse(
