@@ -1,9 +1,10 @@
 import { DataTable } from "@/components/dashboard/DataTable";
 import { EmptyState } from "@/components/dashboard/States";
 import { FilterBar } from "@/components/dashboard/FilterBar";
+import { KPIStat } from "@/components/dashboard/KPIStat";
 import { getResponses } from "@/lib/api";
 import { parseDashboardFilters, type SearchParamsInput } from "@/lib/filters";
-import { applyFilters, normalizeResponses } from "@/lib/selectors";
+import { applyFilters, countBy, normalizeResponses, topBucket } from "@/lib/selectors";
 
 const filtersConfig = [
   {
@@ -47,9 +48,17 @@ export default async function LearnersPage({ searchParams }: { searchParams: Pro
   const learners = applyFilters(normalizeResponses(responsesData.responses), filters);
 
   return (
-    <div style={{ display: "grid", gap: 14 }}>
-      <h2 style={{ margin: 0 }}>Unified Learner Profile</h2>
+    <div className="dashboard-panel">
+      <header>
+        <h2 className="section-title">Unified Learner Profile</h2>
+        <p className="section-subtitle">Search, segment, and drill into each learner profile.</p>
+      </header>
       <FilterBar selectFilters={filtersConfig} />
+      <section className="grid-kpi">
+        <KPIStat label="Learners in view" value={learners.length} />
+        <KPIStat label="Top region" value={topBucket(countBy(learners, (row) => row.region))} />
+        <KPIStat label="Top track" value={topBucket(countBy(learners, (row) => row.track))} />
+      </section>
       {learners.length ? <DataTable rows={learners} /> : <EmptyState label="No learners match current filters." />}
     </div>
   );

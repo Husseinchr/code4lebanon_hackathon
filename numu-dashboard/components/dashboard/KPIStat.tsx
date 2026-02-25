@@ -7,15 +7,15 @@ type KPIStatProps = {
 export function KPIStat({ label, value, hint }: KPIStatProps) {
   return (
     <article
+      className="card"
       style={{
-        border: "1px solid var(--border)",
-        borderRadius: 14,
-        background: "var(--surface)",
-        padding: "1rem",
+        padding: "1.05rem",
+        background:
+          "linear-gradient(150deg, rgba(255,255,255,1) 0%, rgba(244,251,255,1) 56%, rgba(221,243,249,1) 100%)",
       }}
     >
-      <p style={{ margin: 0, color: "var(--muted)", fontSize: 12 }}>{label}</p>
-      <p style={{ margin: "0.25rem 0", fontSize: 30, fontWeight: 700 }}>{value}</p>
+      <p style={{ margin: 0, color: "var(--muted)", fontSize: 12, fontWeight: 600 }}>{label}</p>
+      <p style={{ margin: "0.35rem 0", fontSize: 33, fontWeight: 760, letterSpacing: "-0.02em" }}>{value}</p>
       {hint ? <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>{hint}</p> : null}
     </article>
   );

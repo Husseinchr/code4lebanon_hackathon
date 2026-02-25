@@ -1,8 +1,9 @@
+import { BucketBarChart } from "@/components/dashboard/charts/BucketBarChart";
+import { BucketDonutChart } from "@/components/dashboard/charts/BucketDonutChart";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { EmptyState } from "@/components/dashboard/States";
 import { FilterBar } from "@/components/dashboard/FilterBar";
 import { KPIStat } from "@/components/dashboard/KPIStat";
-import { SimpleBarChart } from "@/components/dashboard/SimpleBarChart";
 import { getResponses } from "@/lib/api";
 import { parseDashboardFilters, type SearchParamsInput } from "@/lib/filters";
 import { applyFilters, countBy, normalizeResponses, topBucket } from "@/lib/selectors";
@@ -56,27 +57,34 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
     learners.flatMap((item) => item.aiGoals.map((goal) => ({ ...item, goal }))),
     (item) => item.goal,
   );
+  const ageHistogram = countBy(learners, (item) => item.ageRange);
 
   return (
-    <div style={{ display: "grid", gap: 14 }}>
-      <h2 style={{ margin: 0 }}>Interest & Strategy Insights</h2>
+    <div className="dashboard-panel">
+      <header>
+        <h2 className="section-title">Challenges & Strategy Insights</h2>
+        <p className="section-subtitle">Understand learner demand, motivations, and readiness profile.</p>
+      </header>
       <FilterBar selectFilters={filtersConfig} />
 
-      <section style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-        <KPIStat label="Total learners" value={learners.length} />
-        <KPIStat label="Top track" value={topBucket(trackDemand)} />
-        <KPIStat label="Top motivation" value={topBucket(motivations)} />
+      <section className="grid-kpi">
+        <KPIStat label="Total learners" value={learners.length} hint="Filtered cohort" />
+        <KPIStat label="Top track" value={topBucket(trackDemand)} hint="Most selected program" />
+        <KPIStat label="Top motivation" value={topBucket(motivations)} hint="Primary learner intent" />
       </section>
 
-      <section style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))" }}>
-        <ChartCard title="Training track demand">
-          {trackDemand.length ? <SimpleBarChart data={trackDemand} /> : <EmptyState label="No track demand data." />}
+      <section className="grid-charts">
+        <ChartCard title="Track demand" subtitle="Distribution by training track">
+          {trackDemand.length ? <BucketDonutChart data={trackDemand} /> : <EmptyState label="No track demand data." />}
         </ChartCard>
-        <ChartCard title="Motivations distribution">
-          {motivations.length ? <SimpleBarChart data={motivations} /> : <EmptyState label="No motivations data." />}
+        <ChartCard title="Motivations" subtitle="What drives participation">
+          {motivations.length ? <BucketBarChart data={motivations} color="#0f766e" /> : <EmptyState label="No motivations data." />}
         </ChartCard>
-        <ChartCard title="AI goals distribution">
-          {aiGoals.length ? <SimpleBarChart data={aiGoals} /> : <EmptyState label="No AI goals data." />}
+        <ChartCard title="AI goals" subtitle="Desired outcomes from AI learning">
+          {aiGoals.length ? <BucketBarChart data={aiGoals} color="#0284c7" /> : <EmptyState label="No AI goals data." />}
+        </ChartCard>
+        <ChartCard title="Age histogram" subtitle="Cohort concentration by age range">
+          {ageHistogram.length ? <BucketBarChart data={ageHistogram} color="#f59e0b" /> : <EmptyState label="No age distribution data." />}
         </ChartCard>
       </section>
     </div>

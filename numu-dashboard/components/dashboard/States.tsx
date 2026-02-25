@@ -1,13 +1,13 @@
 export function EmptyState({ label }: { label: string }) {
   return (
     <section
+      className="card"
       style={{
-        border: "1px dashed var(--border)",
-        borderRadius: 12,
+        borderStyle: "dashed",
         padding: "1rem",
         textAlign: "center",
         color: "var(--muted)",
-        background: "var(--surface)",
+        background: "linear-gradient(180deg, #ffffff 0%, #f8fcff 100%)",
       }}
     >
       {label}

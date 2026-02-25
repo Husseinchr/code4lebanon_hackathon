@@ -32,25 +32,25 @@ export function FilterBar({
 
   return (
     <section
+      className="card"
       style={{
         display: "grid",
         gap: 10,
-        background: "var(--surface)",
-        border: "1px solid var(--border)",
-        borderRadius: 14,
-        padding: "0.85rem",
+        padding: "0.9rem",
+        background:
+          "linear-gradient(130deg, rgba(255,255,255,1) 0%, rgba(241,249,255,1) 64%, rgba(222,242,248,1) 100%)",
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-        <strong>Global Filters</strong>
+        <strong style={{ fontSize: 14 }}>Global Filters</strong>
         <button onClick={() => router.push(pathname)} style={buttonStyle}>
           Reset
         </button>
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
         {includeSearch ? (
           <input
-            placeholder="Search learners/entity"
+            placeholder="Search learners, city, entity"
             defaultValue={searchParams.get("q") ?? ""}
             onBlur={(event) => setParam("q", event.target.value.trim())}
             style={inputStyle}
@@ -74,7 +74,7 @@ export function FilterBar({
         ) : null}
         {selectFilters.map((filter) => (
           <label key={filter.key} style={{ display: "grid", gap: 4 }}>
-            <span style={{ fontSize: 12, color: "var(--muted)" }}>{filter.label}</span>
+            <span style={{ fontSize: 12, color: "var(--muted)", fontWeight: 600 }}>{filter.label}</span>
             <select
               defaultValue={searchParams.get(filter.key) ?? "all"}
               onChange={(event) => setParam(filter.key, event.target.value)}
@@ -94,17 +94,20 @@ export function FilterBar({
 }
 
 const inputStyle: React.CSSProperties = {
-  minWidth: 150,
+  minWidth: 170,
   border: "1px solid var(--border)",
-  borderRadius: 8,
-  padding: "0.5rem 0.6rem",
+  borderRadius: 10,
+  padding: "0.52rem 0.62rem",
   background: "#fff",
+  fontSize: 13,
 };
 
 const buttonStyle: React.CSSProperties = {
   border: "1px solid var(--border)",
   background: "#fff",
-  borderRadius: 8,
-  padding: "0.45rem 0.7rem",
+  borderRadius: 10,
+  padding: "0.45rem 0.75rem",
   cursor: "pointer",
+  fontSize: 13,
+  fontWeight: 600,
 };

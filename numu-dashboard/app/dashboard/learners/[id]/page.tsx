@@ -17,15 +17,17 @@ export default async function LearnerProfilePage({
   const learner = normalizeResponse(result.response);
 
   return (
-    <div style={{ display: "grid", gap: 14 }}>
+    <div className="dashboard-panel">
       <header>
-        <h2 style={{ margin: 0 }}>{learner.name}</h2>
-        <p style={{ margin: "0.35rem 0 0", color: "var(--muted)" }}>
-          Provider badge: <strong>{learner.providerBadge}</strong>
+        <h2 className="section-title">{learner.name}</h2>
+        <p className="section-subtitle">
+          Provider badge:
+          {" "}
+          <strong>{learner.providerBadge}</strong>
         </p>
       </header>
 
-      <section style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
+      <section className="grid-charts">
         <ChartCard title="Contact">
           <p style={line}>Email: {learner.email}</p>
           <p style={line}>Phone: {learner.phone}</p>

@@ -1,8 +1,10 @@
+import { BucketBarChart } from "@/components/dashboard/charts/BucketBarChart";
+import { RegionChannelStacked } from "@/components/dashboard/charts/RegionChannelStacked";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { EmptyState } from "@/components/dashboard/States";
 import { FilterBar } from "@/components/dashboard/FilterBar";
 import { KPIStat } from "@/components/dashboard/KPIStat";
-import { SimpleBarChart } from "@/components/dashboard/SimpleBarChart";
+import { LebanonLeafletMap } from "@/components/dashboard/LebanonLeafletMap";
 import { getResponses } from "@/lib/api";
 import { parseDashboardFilters, type SearchParamsInput } from "@/lib/filters";
 import { applyFilters, byRegionChannel, countBy, lowRegions, normalizeResponses, topBucket } from "@/lib/selectors";
@@ -51,52 +53,51 @@ export default async function GeographyPage({ searchParams }: { searchParams: Pr
   const regions = countBy(learners, (item) => item.region);
   const weakest = lowRegions(learners, 3);
   const matrix = byRegionChannel(learners);
+  const mapRegions = matrix.map((row) => ({
+    region: row.region,
+    count: row.channels.reduce((sum, channel) => sum + channel.count, 0),
+    topChannel: row.channels[0]?.key ?? "N/A",
+  }));
 
   return (
-    <div style={{ display: "grid", gap: 14 }}>
-      <h2 style={{ margin: 0 }}>Geographic Insights</h2>
+    <div className="dashboard-panel">
+      <header>
+        <h2 className="section-title">Geographic Insights</h2>
+        <p className="section-subtitle">Visualize region performance and channel distribution across Lebanon.</p>
+      </header>
       <FilterBar selectFilters={filtersConfig} />
 
-      <section style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-        <KPIStat label="Total regions active" value={regions.length} />
-        <KPIStat label="Top region" value={topBucket(regions)} />
-        <KPIStat label="Lowest region" value={weakest[0] ? `${weakest[0].key} (${weakest[0].count})` : "N/A"} />
+      <section className="grid-kpi">
+        <KPIStat label="Total regions active" value={regions.length} hint="Regions with at least one learner" />
+        <KPIStat label="Top region" value={topBucket(regions)} hint="Highest registration concentration" />
+        <KPIStat label="Lowest region" value={weakest[0] ? `${weakest[0].key} (${weakest[0].count})` : "N/A"} hint="Current opportunity gap" />
       </section>
 
-      <section style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))" }}>
-        <ChartCard title="Registrations by region">
-          {regions.length ? <SimpleBarChart data={regions} /> : <EmptyState label="No geography data for selected filters." />}
+      <section className="grid-charts">
+        <ChartCard title="Lebanon interactive map" subtitle="Hover checkpoints for region details">
+          {mapRegions.length ? <LebanonLeafletMap regions={mapRegions} /> : <EmptyState label="No region has responses for selected filters." />}
         </ChartCard>
 
-        <ChartCard title="Gap analysis - lowest 3 regions">
+        <ChartCard title="Registrations by region" subtitle="Comparative regional volume">
+          {regions.length ? <BucketBarChart data={regions} color="#0ea5b5" /> : <EmptyState label="No geography data for selected filters." />}
+        </ChartCard>
+
+        <ChartCard title="Gap analysis" subtitle="Lowest 3 regions by participation">
           {weakest.length ? (
-            <ul style={{ margin: 0, paddingLeft: 18 }}>
-              {weakest.map((region) => (
-                <li key={region.key} style={{ marginBottom: 6 }}>
-                  {region.key}: {region.count}
-                </li>
+            <div style={{ display: "grid", gap: 8 }}>
+              {weakest.map((region, index) => (
+                <div key={region.key} className="card" style={{ padding: "0.6rem 0.7rem", boxShadow: "none" }}>
+                  #{index + 1} {region.key}: <strong>{region.count}</strong>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <EmptyState label="No regions available." />
           )}
         </ChartCard>
 
-        <ChartCard title="Region x Channel breakdown">
-          {matrix.length ? (
-            <div style={{ display: "grid", gap: 10 }}>
-              {matrix.map((row) => (
-                <div key={row.region}>
-                  <strong>{row.region}</strong>
-                  <p style={{ margin: "0.2rem 0", color: "var(--muted)", fontSize: 13 }}>
-                    {row.channels.map((channel) => `${channel.key}: ${channel.count}`).join(" | ") || "No data"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyState label="No channel breakdown data." />
-          )}
+        <ChartCard title="Region x Channel stacked view" subtitle="Channel mix per region">
+          {matrix.length ? <RegionChannelStacked matrix={matrix} /> : <EmptyState label="No channel breakdown data." />}
         </ChartCard>
       </section>
     </div>

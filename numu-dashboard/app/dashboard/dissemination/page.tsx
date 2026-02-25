@@ -1,8 +1,10 @@
+import { BucketAreaChart } from "@/components/dashboard/charts/BucketAreaChart";
+import { BucketBarChart } from "@/components/dashboard/charts/BucketBarChart";
+import { BucketDonutChart } from "@/components/dashboard/charts/BucketDonutChart";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { EmptyState } from "@/components/dashboard/States";
 import { FilterBar } from "@/components/dashboard/FilterBar";
 import { KPIStat } from "@/components/dashboard/KPIStat";
-import { SimpleBarChart } from "@/components/dashboard/SimpleBarChart";
 import { getResponses } from "@/lib/api";
 import { parseDashboardFilters, type SearchParamsInput } from "@/lib/filters";
 import { applyFilters, byDate, countBy, normalizeResponses, topBucket } from "@/lib/selectors";
@@ -31,11 +33,7 @@ const selectFilters = [
   },
 ];
 
-export default async function DisseminationPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParamsInput>;
-}) {
+export default async function DisseminationPage({ searchParams }: { searchParams: Promise<SearchParamsInput> }) {
   const [responsesData, params] = await Promise.all([getResponses(), searchParams]);
   const filters = parseDashboardFilters(params);
   const learners = applyFilters(normalizeResponses(responsesData.responses), filters);
@@ -43,25 +41,28 @@ export default async function DisseminationPage({
   const entityBuckets = countBy(learners, (item) => item.channelEntityName);
 
   return (
-    <div style={{ display: "grid", gap: 14 }}>
-      <h2 style={{ margin: 0 }}>Dissemination Performance</h2>
+    <div className="dashboard-panel">
+      <header>
+        <h2 className="section-title">Channel Performance</h2>
+        <p className="section-subtitle">Track registration flow, source quality, and entity impact.</p>
+      </header>
       <FilterBar selectFilters={selectFilters} />
 
-      <section style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-        <KPIStat label="Total registrations" value={learners.length} />
-        <KPIStat label="Top channel" value={topBucket(channelBuckets)} />
-        <KPIStat label="Top entity" value={topBucket(entityBuckets)} />
+      <section className="grid-kpi">
+        <KPIStat label="Total registrations" value={learners.length} hint="All filtered learners" />
+        <KPIStat label="Top channel" value={topBucket(channelBuckets)} hint="Highest-performing source" />
+        <KPIStat label="Top entity" value={topBucket(entityBuckets)} hint="Best single partner" />
       </section>
 
-      <section style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))" }}>
-        <ChartCard title="Registrations by channel type" subtitle="Apply a channel filter for entity drilldown">
-          {channelBuckets.length ? <SimpleBarChart data={channelBuckets} /> : <EmptyState label="No data for selected filters." />}
+      <section className="grid-charts">
+        <ChartCard title="Registrations by channel" subtitle="Interactive distribution by source type">
+          {channelBuckets.length ? <BucketDonutChart data={channelBuckets} /> : <EmptyState label="No data for selected filters." />}
         </ChartCard>
-        <ChartCard title="Top entities">
-          {entityBuckets.length ? <SimpleBarChart data={entityBuckets.slice(0, 7)} /> : <EmptyState label="No entities found." />}
+        <ChartCard title="Top entities" subtitle="Partner-level contribution drilldown">
+          {entityBuckets.length ? <BucketBarChart data={entityBuckets.slice(0, 8)} /> : <EmptyState label="No entities found." />}
         </ChartCard>
-        <ChartCard title="Registrations over time">
-          {learners.length ? <SimpleBarChart data={byDate(learners)} /> : <EmptyState label="No timeline data." />}
+        <ChartCard title="Registration trend" subtitle="Daily registration movement">
+          {learners.length ? <BucketAreaChart data={byDate(learners)} /> : <EmptyState label="No timeline data." />}
         </ChartCard>
       </section>
     </div>

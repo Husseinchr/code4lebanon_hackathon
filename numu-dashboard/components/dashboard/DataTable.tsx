@@ -8,18 +8,26 @@ type DataTableProps = {
 export function DataTable({ rows }: DataTableProps) {
   return (
     <div
+      className="card"
       style={{
-        border: "1px solid var(--border)",
-        borderRadius: 14,
-        background: "var(--surface)",
         overflowX: "auto",
+        background: "linear-gradient(180deg, #ffffff 0%, #f9fcff 100%)",
       }}
     >
-      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800 }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 860 }}>
         <thead>
-          <tr style={{ textAlign: "left", background: "#f8fafc" }}>
+          <tr style={{ textAlign: "left", background: "#f0f7fb" }}>
             {["Name", "Track", "Channel", "Entity", "Region", "Date", "Provider", "Profile"].map((header) => (
-              <th key={header} style={{ padding: "0.7rem", borderBottom: "1px solid var(--border)", fontSize: 13 }}>
+              <th
+                key={header}
+                style={{
+                  padding: "0.8rem",
+                  borderBottom: "1px solid var(--border)",
+                  fontSize: 12,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
                 {header}
               </th>
             ))}
@@ -27,8 +35,8 @@ export function DataTable({ rows }: DataTableProps) {
         </thead>
         <tbody>
           {rows.map((learner) => (
-            <tr key={learner.id}>
-              <td style={cell}>{learner.name}</td>
+            <tr key={learner.id} style={{ background: learner.providerBadge === "Oracle" ? "#fff" : "#fbfdff" }}>
+              <td style={cellPrimary}>{learner.name}</td>
               <td style={cell}>{learner.track}</td>
               <td style={cell}>{learner.channelType}</td>
               <td style={cell}>{learner.channelEntityName}</td>
@@ -36,7 +44,7 @@ export function DataTable({ rows }: DataTableProps) {
               <td style={cell}>{learner.submissionDate}</td>
               <td style={cell}>{learner.providerBadge}</td>
               <td style={cell}>
-                <Link href={`/dashboard/learner/${learner.id}`} style={{ color: "var(--brand)", fontWeight: 600 }}>
+                <Link href={`/dashboard/learner/${learner.id}`} style={{ color: "var(--brand)", fontWeight: 700 }}>
                   Open
                 </Link>
               </td>
@@ -49,7 +57,12 @@ export function DataTable({ rows }: DataTableProps) {
 }
 
 const cell: React.CSSProperties = {
-  padding: "0.7rem",
-  borderBottom: "1px solid #edf2f7",
-  fontSize: 14,
+  padding: "0.72rem 0.8rem",
+  borderBottom: "1px solid #e6edf4",
+  fontSize: 13,
+};
+
+const cellPrimary: React.CSSProperties = {
+  ...cell,
+  fontWeight: 650,
 };
