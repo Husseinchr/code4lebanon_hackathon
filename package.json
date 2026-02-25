@@ -1,0 +1,9 @@
+{
+  "name": "hacka-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix numu-dashboard run dev",
+    "build": "npm --prefix numu-dashboard run build",
+    "lint": "npm --prefix numu-dashboard run lint"
+  }
+}
