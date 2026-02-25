@@ -48,27 +48,21 @@ async def lifespan(app: FastAPI):
         df = normalize_df(raw)
         app.state.df = df
         app.state.aggregations = {
-    "summary":          compute_summary(df),
-    "dissemination":    compute_dissemination(df),
-    "interests":        compute_interests(df),
-    "geography":        compute_geography(df),
-    "recommendations":  compute_recommendations(df),
-}
+            "summary":           compute_summary(df),
+            "dissemination":     compute_dissemination(df),
+            "interests":         compute_interests(df),
+            "geography":         compute_geography(df),
+            "recommendations":   compute_recommendations(df),
+            "alerts":            compute_alerts(df),
+            "program_readiness": compute_program_readiness(df),
+            "cohort_profile":    compute_cohort_profile(df),
+        }
         app.state.started_at = datetime.now(timezone.utc).isoformat()
         logger.info("Startup complete: %d responses loaded, DataFrame shape %s.", len(raw), df.shape)
     except Exception as exc:
         logger.error("Startup data load failed: %s — endpoints will serve stubs.", exc)
         app.state.df = None
-        app.state.aggregations = {
-    "summary":           compute_summary(df),
-    "dissemination":     compute_dissemination(df),
-    "interests":         compute_interests(df),
-    "geography":         compute_geography(df),
-    "recommendations":   compute_recommendations(df),   # already added earlier
-    "alerts":            compute_alerts(df),             # ADD THIS
-    "program_readiness": compute_program_readiness(df),  # ADD THIS
-    "cohort_profile":    compute_cohort_profile(df),     # ADD THIS
-}
+        app.state.aggregations = {}
         app.state.started_at = datetime.now(timezone.utc).isoformat()
 
     yield
