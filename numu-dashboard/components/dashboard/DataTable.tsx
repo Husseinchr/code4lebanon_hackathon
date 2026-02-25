@@ -36,7 +36,7 @@ export function DataTable({ rows }: DataTableProps) {
               <td style={cell}>{learner.submissionDate}</td>
               <td style={cell}>{learner.providerBadge}</td>
               <td style={cell}>
-                <Link href={`/dashboard/learners/${learner.id}`} style={{ color: "var(--brand)", fontWeight: 600 }}>
+                <Link href={`/dashboard/learner/${learner.id}`} style={{ color: "var(--brand)", fontWeight: 600 }}>
                   Open
                 </Link>
               </td>
