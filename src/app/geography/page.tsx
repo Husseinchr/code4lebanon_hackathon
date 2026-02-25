@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { ChartCard } from '@/components/ui/ChartCard'
 import { StatCard } from '@/components/ui/StatCard'
 import { LebanonMap } from '@/components/charts/LebanonMap'
+import { LebanonLeafletMap } from '@/components/charts/LebanonLeafletMap'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { AlertTriangle, Globe, MapPin, TrendingUp } from 'lucide-react'
 
@@ -72,6 +73,30 @@ export default async function GeographyPage() {
           </div>
         </ChartCard>
       </div>
+
+      <ChartCard
+        title={<Tr en="Interactive Map — Leaflet" ar="الخريطة التفاعلية" />}
+        subtitle={<Tr en="Live tile map · circle size scales with registration count · hover for details" ar="خريطة تفاعلية حية · حجم الدائرة يتناسب مع عدد التسجيلات · مرر الماوس للتفاصيل" />}
+      >
+        <div className="mt-2">
+          <LebanonLeafletMap regions={data.regions} />
+          <div className="mt-3 flex flex-wrap gap-3 justify-center">
+            {[
+              { color: '#e11d48', label: <Tr en="≥ 30%" ar="≥ 30%" /> },
+              { color: '#f97316', label: <Tr en="20–30%" ar="20–30%" /> },
+              { color: '#10b981', label: <Tr en="10–20%" ar="10–20%" /> },
+              { color: '#0ea5e9', label: <Tr en="< 10%" ar="< 10%" /> },
+              { color: '#f59e0b', label: <Tr en="Underrepresented" ar="ممثلة بشكل ناقص" /> },
+              { color: '#475569', label: <Tr en="No data" ar="لا بيانات" /> },
+            ].map(({ color, label }, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full" style={{ background: color }} />
+                <span className="text-xs" style={{ color: 'var(--muted)' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </ChartCard>
 
       {data.underrepresented.length > 0 && (
         <ChartCard
