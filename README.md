@@ -1,1 +1,0 @@
-# code4lebanon_hackathon
