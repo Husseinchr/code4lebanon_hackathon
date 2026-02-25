@@ -109,6 +109,23 @@ async def get_responses(force_refresh: bool = False) -> List[dict]:
             return backup
 
 
+async def get_last_response_date() -> dict:
+    """Call GET /api/responses/last-response-date and return the data block."""
+    headers = {
+        "accept": "application/json",
+        "x-api-key": settings.SURVEY_API_KEY,
+    }
+    async with httpx.AsyncClient(
+        base_url=settings.SURVEY_API_BASE_URL,
+        headers=headers,
+        timeout=10.0,
+    ) as client:
+        resp = await client.get("/api/responses/last-response-date")
+        resp.raise_for_status()
+        payload = resp.json()
+        return payload["data"]  # {last_response_date, response_id, survey_id}
+
+
 async def force_refresh() -> int:
     responses = await get_responses(force_refresh=True)
     return len(responses)
